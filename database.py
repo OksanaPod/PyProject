@@ -48,12 +48,16 @@ def register_user(vk_id):
 
 
 def add_user(vk_id, first_name, second_name, link, id_user):
-    new_user = DatingProspect(
-        vk_id=vk_id,
-        first_name=first_name,
-        second_name=second_name,
-        link=link,
-        id_user=id_user)
-    session.add(new_user)
-    session.commit()
-    return True
+    try:
+        new_user = DatingProspect(
+            vk_id=vk_id,
+            first_name=first_name,
+            second_name=second_name,
+            link=link,
+            id_user=id_user)
+        session.add(new_user)
+        session.commit()
+        
+        return True
+    except Exception:
+        return False

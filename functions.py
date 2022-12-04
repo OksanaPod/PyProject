@@ -45,36 +45,45 @@ def get_user_info(user_id):
 
 
 def people_search(sex, city, age_from, age_to):
-    res = vk_personal.method('users.search', {'sort': 1,
-                                              'status': 6,
-                                              'has_photo': 1,
-                                              'sex': sex,
-                                              'city': city,
-                                              'age_from': age_from,
-                                              'age_to': age_to,
-                                              'count': 5})
+    try:
+        res = vk_personal.method('users.search', {'sort': 1,
+                                                'status': 6,
+                                                'has_photo': 1,
+                                                'sex': sex,
+                                                'city': city,
+                                                'age_from': age_from,
+                                                'age_to': age_to,
+                                                'count': 5})
+    except Exception:
+        print(' ошибка!')
     candidates = []
     prof_link = 'https://vk.com/id'
     for el in res['items']:
-        if el['is_closed'] == False:
-            person = [el['id'], el['first_name'], el['last_name'], str(prof_link) + str(el['id'])]
-            candidates.append(person)
+        try:
+            if el['is_closed'] == False:
+                person = [el['id'], el['first_name'], el['last_name'], str(prof_link) + str(el['id'])]
+                candidates.append(person)
+        except Exception:
+            print(' ошибка!')               
     return candidates
 
 
 def get_candidate_photos(candidate_id):
-    res = vk_personal.method('photos.get', {'owner_id': candidate_id, 'album_id': 'profile', 'extended': 1})
-    data = []
-    for el in res['items']:
-        like_sum = el['likes']['count'] + el['comments']['count']
-        owner_id = el['owner_id']
-        file_id = el['id']
-        temp_list = [like_sum, owner_id, file_id]
-        data.append(temp_list)
-        data.sort(reverse=True)
-    top_list = []
-    for el in itertools.islice(data, 3):
-        top_list.append(f'photo{el[1]}_{el[2]}')
+    try:
+        res = vk_personal.method('photos.get', {'owner_id': candidate_id, 'album_id': 'profile', 'extended': 1})
+        data = []
+        for el in res['items']:
+            like_sum = el['likes']['count'] + el['comments']['count']
+            owner_id = el['owner_id']
+            file_id = el['id']
+            temp_list = [like_sum, owner_id, file_id]
+            data.append(temp_list)
+            data.sort(reverse=True)
+        top_list = []
+        for el in itertools.islice(data, 3):
+            top_list.append(f'photo{el[1]}_{el[2]}')
+    except IndexError:
+        print('нет доступа к фото')
     return top_list
 
 
